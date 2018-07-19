@@ -30,6 +30,9 @@ libnng.nng_pair0_open.restype  =  ctypes.c_int
 libnng.nng_pair1_open.argtypes = (ctypes.c_void_p,)
 libnng.nng_pair1_open.restype  =  ctypes.c_int
 
+libnng.nng_bus0_open.argtypes = (ctypes.c_void_p,)
+libnng.nng_bus0_open.restype  =  ctypes.c_int
+
 #                                 socket        char **buf                size_t *sz                flags
 libnng.nng_recv.argtypes      = (ctypes.c_uint, POINTER(ctypes.c_void_p), POINTER(ctypes.c_size_t), ctypes.c_int)
 libnng.nng_recv.restype       =  ctypes.c_int
@@ -128,6 +131,8 @@ class Pair0     (Socket):
     def __init__(self):        super(Pair0,      self).__init__(libnng.nng_pair0_open)
 class Pair1     (Socket):
     def __init__(self):        super(Pair1,      self).__init__(libnng.nng_pair1_open)
+class Bus       (Socket):
+    def __init__(self):        super(Bus,        self).__init__(libnng.nng_bus0_open)
 class Publisher (ServerSocket):
     def __init__(self):        super(Publisher,  self).__init__(libnng.nng_pub0_open)
 class Subscriber(ClientSocket):
