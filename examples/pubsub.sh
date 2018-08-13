@@ -4,11 +4,11 @@ cd "$(dirname "$0")"
 
 export PYTHONPATH=..
 
-python pubsub-server.py &
+python3 pubsub-server.py &
 pid1=$!
 sleep 2  # ..wait for listening
 
-python pubsub-client.py &
+python3 pubsub-client.py &
 pid2=$!
 
 sleep 5  # ..do work

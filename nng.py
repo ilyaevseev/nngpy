@@ -99,6 +99,7 @@ class BaseSocket(object):
 
         if not isinstance(buf, str):
             buf = str(buf)
+        buf = self.enc(buf)
         return self.ok(libnng.nng_send(self.sock, buf, len(buf), flags))
 
     def recv(self, flags=NNG_FLAG_ALLOC):
@@ -113,15 +114,18 @@ class BaseSocket(object):
 
         data = ctypes.POINTER(ctypes.c_char).from_buffer(p)[:sz.value]
         self.ok(libnng.nng_free(p, sz))
-        return data
+        return data.decode('utf-8')
+
+    def enc(self, str):
+        return str.encode('utf-8')
 
 class ServerSocket(BaseSocket):
-    def listen (self, url, handler=None, flags=0):  return self.ok(libnng.nng_listen(self.sock, url, handler, flags))
+    def listen (self, url, handler=None, flags=0):  return self.ok(libnng.nng_listen(self.sock, self.enc(url), handler, flags))
 class ClientSocket(BaseSocket):
-    def connect(self, url, handler=None, flags=0):  return self.ok(libnng.nng_dial  (self.sock, url, handler, flags))
+    def connect(self, url, handler=None, flags=0):  return self.ok(libnng.nng_dial  (self.sock, self.enc(url), handler, flags))
 class Socket(BaseSocket):
-    def listen (self, url, handler=None, flags=0):  return self.ok(libnng.nng_listen(self.sock, url, handler, flags))
-    def connect(self, url, handler=None, flags=0):  return self.ok(libnng.nng_dial  (self.sock, url, handler, flags))
+    def listen (self, url, handler=None, flags=0):  return self.ok(libnng.nng_listen(self.sock, self.enc(url), handler, flags))
+    def connect(self, url, handler=None, flags=0):  return self.ok(libnng.nng_dial  (self.sock, self.enc(url), handler, flags))
 
 class Request   (ClientSocket):
     def __init__(self):        super(Request,    self).__init__(libnng.nng_req0_open)
@@ -138,7 +142,7 @@ class Publisher (ServerSocket):
 class Subscriber(ClientSocket):
     def __init__(self):        super(Subscriber, self).__init__(libnng.nng_sub0_open)
     def subscribe(self):
-        return self.ok(libnng.nng_setopt(self.sock, NNG_OPT_SUB_SUBSCRIBE, "", 0));
+        return self.ok(libnng.nng_setopt(self.sock, self.enc(NNG_OPT_SUB_SUBSCRIBE), "", 0));
 
 if __name__ == "__main__":
     x = libnng.nng_strerror(2)
