@@ -7,6 +7,6 @@ sub.subscribe()
 sub.connect("ipc:///tmp/nngpy-pubsub")
 
 while True:
-    print("Received by client: " + sub.recv())
+    print("Received by client: " + sub.recvstr())
 
 ## END ##

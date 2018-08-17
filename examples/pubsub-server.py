@@ -10,7 +10,7 @@ pub.listen("ipc:///tmp/nngpy-pubsub")
 while True:
     t = datetime.now()
     f = t.strftime('%Y-%m-%d %H:%M:%S')
-    pub.send("Sent by server: " + f)
+    pub.sendstr("Sent by server: " + f)
     time.sleep(1)
 
 ## END ##

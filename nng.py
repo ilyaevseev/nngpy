@@ -96,11 +96,10 @@ class BaseSocket(object):
         raise Error(rv)
 
     def send(self, buf, flags=0):
-
-        if not isinstance(buf, str):
-            buf = str(buf)
-        buf = self.enc(buf)
         return self.ok(libnng.nng_send(self.sock, buf, len(buf), flags))
+
+    def sendstr(self, s):
+        self.send(self.enc(s))
 
     def recv(self, flags=NNG_FLAG_ALLOC):
 
@@ -114,10 +113,14 @@ class BaseSocket(object):
 
         data = ctypes.POINTER(ctypes.c_char).from_buffer(p)[:sz.value]
         self.ok(libnng.nng_free(p, sz))
-        return data.decode('utf-8')
+        return data
 
-    def enc(self, str):
-        return str.encode('utf-8')
+    def recvstr(self):
+        s = self.recv()
+        return s.decode('utf-8') if s else s
+
+    def enc(self, s):
+        return s.encode('utf-8')
 
 class ServerSocket(BaseSocket):
     def listen (self, url, handler=None, flags=0):  return self.ok(libnng.nng_listen(self.sock, self.enc(url), handler, flags))
